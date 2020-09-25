@@ -1,0 +1,14 @@
+.\objects\pwmlib.o: pwmlib.c
+.\objects\pwmlib.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\pwmlib.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\pwmlib.o: C:\ti\TivaWare_C_Series-2.1.4.178\inc/hw_ints.h
+.\objects\pwmlib.o: C:\ti\TivaWare_C_Series-2.1.4.178\inc/hw_memmap.h
+.\objects\pwmlib.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/gpio.h
+.\objects\pwmlib.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/pin_map.h
+.\objects\pwmlib.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/rom.h
+.\objects\pwmlib.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/sysctl.h
+.\objects\pwmlib.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/pwm.h
+.\objects\pwmlib.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/uart.h
+.\objects\pwmlib.o: C:\ti\TivaWare_C_Series-2.1.4.178\utils/uartstdio.h
+.\objects\pwmlib.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\pwmlib.o: pwmlib.h
