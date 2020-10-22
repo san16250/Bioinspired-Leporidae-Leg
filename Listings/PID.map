@@ -1182,17 +1182,17 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-      1016        190          0         92         72      22174   main.o
-       128         36          0          0          0       1066   pidlib.o
-      1028        104          0          0          0       2562   pwmlib.o
-       672        636          0          0        256        804   startup_rvmdk.o
-       392         46          0          0          0      15325   timer0lib.o
-       532         90          0          0          0       1269   timer1lib.o
-       316         46          0          0          0       1213   uartlib.o
+      1016        190          0         92         72      22234   main.o
+       128         36          0          0          0       1098   pidlib.o
+      1028        104          0          0          0       2614   pwmlib.o
+       672        636          0          0        256        828   startup_rvmdk.o
+       392         46          0          0          0      15357   timer0lib.o
+       532         90          0          0          0       1297   timer1lib.o
+       316         46          0          0          0       1245   uartlib.o
        814         40         45          5          0       5463   uartstdio.o
 
     ----------------------------------------------------------------------
-      4900       1188         80        100        328      49876   Object Totals
+      4900       1188         80        100        328      50136   Object Totals
          0          0         32          0          0          0   (incl. Generated)
          2          0          3          3          0          0   (incl. Padding)
 
@@ -1260,8 +1260,8 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      7268       1290       1228        100        428      69386   Grand Totals
-      7268       1290       1228        100        428      69386   ELF Image Totals
+      7268       1290       1228        100        428      69646   Grand Totals
+      7268       1290       1228        100        428      69646   ELF Image Totals
       7268       1290       1228        100          0          0   ROM Totals
 
 ==============================================================================
