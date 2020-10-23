@@ -19,10 +19,10 @@
 #include "driverlib/pwm.h"
 #include "utils/uartstdio.h"
 #include "arm_math.h"
-#include "uartlib.h"
-#include "timer0lib.h"
-#include "timer1lib.h"
-#include "pwmlib.h"
+#include "Libraries/Uart/uartlib.h"
+#include "Libraries/Timer0/timer0lib.h"
+#include "Libraries/Timer1/timer1lib.h"
+#include "Libraries/PWM/pwmlib.h"
 #include "pidlib.h"
 
  

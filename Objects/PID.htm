@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\PID.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\PID.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Thu Oct 22 12:07:39 2020
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Thu Oct 22 22:23:11 2020
 <BR><P>
 <H3>Maximum Stack Usage =        120 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -511,9 +511,9 @@ Global Symbols
 <P><STRONG><a name="[3d]"></a>UARTConfigure</STRONG> (Thumb, 152 bytes, Stack size 8 bytes, uartlib.o(i.UARTConfigure))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = UARTConfigure &rArr; UARTStdioConfig
 </UL>
-<BR>[Calls]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTEnable
+<BR>[Calls]<UL><LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTStdioConfig
+<LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTEnable
 <LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTClockSourceSet
-<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTStdioConfig
 <LI><a href="#[29]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinConfigure
 </UL>
 <BR>[Called By]<UL><LI><a href="#[18]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -530,8 +530,8 @@ Global Symbols
 <P><STRONG><a name="[6]"></a>UARTIntHandler</STRONG> (Thumb, 118 bytes, Stack size 16 bytes, uartlib.o(i.UARTIntHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = UARTIntHandler &rArr; UARTprintf &rArr; UARTvprintf &rArr; UARTwrite
 </UL>
-<BR>[Calls]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTIntClear
-<LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTgetc
+<BR>[Calls]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTgetc
+<LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTIntClear
 <LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pid2Config
 <LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pid1Config
 <LI><a href="#[47]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTprintf

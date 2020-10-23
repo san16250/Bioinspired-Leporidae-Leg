@@ -23,12 +23,12 @@
 #include "driverlib/qei.h"
 #include "driverlib/gpio.h"
 #include "driverlib/pwm.h"
-#include "utils/uartstdio.h"
+#include "Libraries/Uartstdio/uartstdio.h"
 #include "arm_math.h"
-#include "uartlib.h"
-#include "timer0lib.h"
-#include "timer1lib.h"
-#include "pwmlib.h"
+#include "Libraries/Uart/uartlib.h"
+#include "Libraries/Timer0/timer0lib.h"
+#include "Libraries/Timer1/timer1lib.h"
+#include "Libraries/PWM/pwmlib.h"
 #include "pidlib.h"
 
 //*****************************************************************************
@@ -137,39 +137,39 @@ Motor1Config(void)
 	// Enable QEI Module 0 pins
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_QEI0);
-	
-	
+
+
 	// Wait for the QEI0 module to be ready.
 	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_QEI0))
 	{
 	}
-	
+
 	// Unlock pin PD7
 	HWREG(GPIO_PORTD_BASE + GPIO_O_LOCK) = GPIO_LOCK_KEY;
 	HWREG(GPIO_PORTD_BASE + GPIO_O_CR) |= 0x80;
 	HWREG(GPIO_PORTD_BASE + GPIO_O_LOCK) = 0;
-	
+
 	// Set pins for PHA0 and PHB0
 	GPIOPinConfigure(GPIO_PD6_PHA0);
 	GPIOPinConfigure(GPIO_PD7_PHB0);
-	
+
 	// Configure pins for use by the QEI peripheral
 	GPIOPinTypeQEI(GPIO_PORTD_BASE, GPIO_PIN_6 | GPIO_PIN_7);
-	
+
 	//Make sure quadrature encoder is off
 	QEIDisable(QEI0_BASE);
-	QEIIntDisable(QEI0_BASE,QEI_INTERROR | QEI_INTDIR | 
+	QEIIntDisable(QEI0_BASE,QEI_INTERROR | QEI_INTDIR |
 		QEI_INTTIMER | QEI_INTINDEX);
-	
+
 	//Configure quadrature encoder using FT0481 top limit
 	QEIConfigure(QEI0_BASE, (QEI_CONFIG_CAPTURE_A_B | QEI_CONFIG_NO_RESET |
 		QEI_CONFIG_QUADRATURE | QEI_CONFIG_SWAP), MOTOR1_RATIO*ENCODER1_PULSES*2);
-		
+
 	//Enable quadrature encoder
 	QEIEnable(QEI0_BASE);
-	
+
 	QEIPositionSet(QEI0_BASE, MOTOR1_RATIO*ENCODER1_PULSES);
-	
+
 	//Enable noise filter
 	QEIFilterDisable(QEI0_BASE);
 	QEIFilterConfigure(QEI0_BASE, QEI_FILTCNT_2);
@@ -190,7 +190,7 @@ Motor2Config(void)
 	// Enable QEI Module 1 pins
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_QEI1);
-	
+
 	// Wait for the QEI1 module to be ready.
 	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_QEI1))
 	{
@@ -199,26 +199,26 @@ Motor2Config(void)
 	//Set pins for PHA1 and PHB1
 	GPIOPinConfigure(GPIO_PC5_PHA1);
 	GPIOPinConfigure(GPIO_PC6_PHB1);
-	
+
 	//Configure pins for use by the QEI peripheral
 	GPIOPinTypeQEI(GPIO_PORTC_BASE, GPIO_PIN_5 | GPIO_PIN_6);
-	
+
 	//Make sure quadrature encoder is off
 	QEIDisable(QEI1_BASE);
-	QEIIntDisable(QEI1_BASE,QEI_INTERROR | QEI_INTDIR | 
+	QEIIntDisable(QEI1_BASE,QEI_INTERROR | QEI_INTDIR |
 		QEI_INTTIMER | QEI_INTINDEX);
-	
+
 	//Configure quadrature encoder using FT0481 top limit
 	QEIConfigure(QEI1_BASE, (QEI_CONFIG_CAPTURE_A_B | QEI_CONFIG_NO_RESET |
 		QEI_CONFIG_QUADRATURE | QEI_CONFIG_SWAP), MOTOR2_RATIO*ENCODER2_PULSES*2);
-	
-		
+
+
 	//Enable quadrature encoder
 	QEIEnable(QEI1_BASE);
-	
+
 	QEIPositionSet(QEI1_BASE, MOTOR2_RATIO*ENCODER2_PULSES);
-	
-	
+
+
 	//Enable noise filter
 	QEIFilterDisable(QEI1_BASE);
 	QEIFilterConfigure(QEI1_BASE, QEI_FILTCNT_2);
@@ -243,7 +243,7 @@ main(void)
 		if (uart_fcn == true) motor_enable = false;
 		pwm_period = (float)(SysCtlClockGet()/PWM_P);
 		UARTConfigure();
-		
+
 		if (uart_fcn == false)
 		{
 			Timer0Configure();
@@ -254,16 +254,16 @@ main(void)
 				PWMGen2Configure();
 				pid1Config();
 			}
-			
-			if(MOTOR2 == true) 
+
+			if(MOTOR2 == true)
 			{
 				Motor2Config();
 				PWMGen0Configure();
 				pid2Config();
 			}
 	  }
-		
-		
+
+
 		Timer0Configure();
 		Timer1Configure();
 		if (MOTOR1 == true)
@@ -278,7 +278,7 @@ main(void)
 			PWMGen0Configure();
 			pid2Config();
 		}
-	
+
     while(1)
     {
 			//
@@ -295,12 +295,12 @@ main(void)
 				{
 					pid_error_0 = WANTED_POS_0_0 - current_pos_0;
 				}
-				if (time_flag == true) 
+				if (time_flag == true)
 				{
 					pid_error_0 = WANTED_POS_0_1 - current_pos_0;
 				}
 			}
-		
+
 			//
 			// PID motor 2
 			//
@@ -308,7 +308,7 @@ main(void)
 			{
 				if (SysCtlPeripheralReady(SYSCTL_PERIPH_QEI1))
 				{
-					current_pos_1 = ((float)QEIPositionGet(QEI1_BASE)*(360.0/(MOTOR2_RATIO*ENCODER2_PULSES)));					
+					current_pos_1 = ((float)QEIPositionGet(QEI1_BASE)*(360.0/(MOTOR2_RATIO*ENCODER2_PULSES)));
 				}
 				// Calculamos el error
 				if (time_flag == false) pid_error_1 = WANTED_POS_1_0 - current_pos_1;
@@ -323,14 +323,14 @@ main(void)
 			//UARTprintf("%i \n", (int32_t)time_flag);
 			//if (MOTOR1 == true && MOTOR2 == false) UARTprintf("%i, %i, %i\n",(int32_t)current_pos_0, (int32_t)pid_error_0, (int32_t)duty_0);
 			// Current Pos in UART
-			
+
 			if (MOTOR1 == true && MOTOR2 == false) UARTprintf("%3u , %3i\n",(uint32_t)current_pos_0, (int32_t)duty_0);
-			
+
 			if (MOTOR1 == true && MOTOR2 == false) UARTprintf("%3u\n",(uint32_t)current_pos_0);
-			
+
 			if (MOTOR1 == true && MOTOR2 == true)UARTprintf("%3u, %3u \n", (uint32_t)current_pos_0,
 				(uint32_t)current_pos_1);
-			
-			
+
+
     }
 }

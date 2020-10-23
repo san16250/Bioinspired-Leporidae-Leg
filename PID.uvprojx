@@ -393,31 +393,6 @@
               <FilePath>.\main.c</FilePath>
             </File>
             <File>
-              <FileName>uartstdio.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>C:\ti\TivaWare_C_Series-2.1.4.178\utils\uartstdio.c</FilePath>
-            </File>
-            <File>
-              <FileName>timer1lib.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\timer1lib.c</FilePath>
-            </File>
-            <File>
-              <FileName>timer0lib.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\timer0lib.c</FilePath>
-            </File>
-            <File>
-              <FileName>uartlib.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\uartlib.c</FilePath>
-            </File>
-            <File>
-              <FileName>pwmlib.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\pwmlib.c</FilePath>
-            </File>
-            <File>
               <FileName>pidlib.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\pidlib.c</FilePath>
@@ -431,6 +406,31 @@
               <FileName>driverlib.lib</FileName>
               <FileType>4</FileType>
               <FilePath>C:\ti\TivaWare_C_Series-2.1.4.178\driverlib\rvmdk\driverlib.lib</FilePath>
+            </File>
+            <File>
+              <FileName>pwmlib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\PWM\pwmlib.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer0lib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\Timer0\timer0lib.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer1lib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\Timer1\timer1lib.c</FilePath>
+            </File>
+            <File>
+              <FileName>uartlib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\Uart\uartlib.c</FilePath>
+            </File>
+            <File>
+              <FileName>uartstdio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\Uartstdio\uartstdio.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -1,4 +1,4 @@
-.\objects\uartlib.o: uartlib.c
+.\objects\uartlib.o: Libraries\Uart\uartlib.c
 .\objects\uartlib.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\uartlib.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 .\objects\uartlib.o: C:\ti\TivaWare_C_Series-2.1.4.178\inc/hw_ints.h
@@ -18,8 +18,8 @@
 .\objects\uartlib.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\objects\uartlib.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\objects\uartlib.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\float.h
-.\objects\uartlib.o: uartlib.h
-.\objects\uartlib.o: timer0lib.h
-.\objects\uartlib.o: timer1lib.h
-.\objects\uartlib.o: pwmlib.h
-.\objects\uartlib.o: pidlib.h
+.\objects\uartlib.o: .\Libraries/Uart/uartlib.h
+.\objects\uartlib.o: .\Libraries/Timer0/timer0lib.h
+.\objects\uartlib.o: .\Libraries/Timer1/timer1lib.h
+.\objects\uartlib.o: .\Libraries/PWM/pwmlib.h
+.\objects\uartlib.o: .\pidlib.h

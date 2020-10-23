@@ -16,7 +16,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/rom.h"
 #include "arm_math.h"
-#include "timer0lib.h"
+#include "Libraries/Timer0/timer0lib.h"
 
  
 /*!  

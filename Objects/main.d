@@ -17,7 +17,7 @@
 .\objects\main.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/uart.h
 .\objects\main.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/qei.h
 .\objects\main.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/pwm.h
-.\objects\main.o: C:\ti\TivaWare_C_Series-2.1.4.178\utils/uartstdio.h
+.\objects\main.o: Libraries/Uartstdio/uartstdio.h
 .\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 .\objects\main.o: C:\Users\chris\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h
 .\objects\main.o: C:\Users\chris\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include\cmsis_compiler.h
@@ -25,8 +25,8 @@
 .\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\float.h
-.\objects\main.o: uartlib.h
-.\objects\main.o: timer0lib.h
-.\objects\main.o: timer1lib.h
-.\objects\main.o: pwmlib.h
+.\objects\main.o: Libraries/Uart/uartlib.h
+.\objects\main.o: Libraries/Timer0/timer0lib.h
+.\objects\main.o: Libraries/Timer1/timer1lib.h
+.\objects\main.o: Libraries/PWM/pwmlib.h
 .\objects\main.o: pidlib.h

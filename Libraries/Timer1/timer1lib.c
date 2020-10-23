@@ -16,11 +16,11 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/rom.h"
 #include "driverlib/pwm.h"
-#include "timer1lib.h"
+#include "Libraries/Timer1/timer1lib.h"
 #include "utils/uartstdio.h"
 #include "arm_math.h"
 #include "pidlib.h"
-#include "uartlib.h"
+#include "Libraries/Uart/uartlib.h"
 
 
 /*!  
