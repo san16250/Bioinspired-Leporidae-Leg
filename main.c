@@ -6,11 +6,11 @@
  * COPYRIGHT NOTICE: (c) 2018 Barr Group. All rights reserved.
  * Propietary: Christian Sandoval - san16250@uvg.edu.gt
  * Universidad del Valle de Guatemala.
- * 
+ *
  * Please cite this code if used even if its just some parts.
  *
  */
- 
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -103,7 +103,7 @@ main(void)
     float tmpFrac;
     int32_t tmpInt2;
     #endif
-    
+
     float encoder1_pos;
     float encoder2_pos;
     float error_1;
@@ -130,7 +130,7 @@ main(void)
         #ifndef UART
         timer1_interrupt_counter = 0;
         #endif
-        
+
         timer0_status = is_timer0_done();
         if (timer0_status == true)
         {
@@ -150,7 +150,7 @@ main(void)
             #endif
         }
         reset_timer0();
-        
+
         timer1_status = is_timer1_done();
         if (timer1_status == true)
         {
@@ -176,20 +176,20 @@ main(void)
                 timer1_interrupt_counter + 1 : timer1_interrupt_counter;
         }
         reset_timer1();
-        
+
         #ifndef NDEBUG
         tmpSign = (encoder1_pos < 0) ? "-" : "";
         tmpVal = (encoder1_pos < 0) ? -encoder1_pos : encoder1_pos;
-        
+
         tmpInt1 = tmpVal;
         tmpFrac = tmpVal - tmpInt1;
         tmpInt2 = trunc(tmpFrac * 10000);
         UARTprintf("Encoder 1: %s%d.%04d, ", tmpSign, tmpInt1, tmpInt2);
-     
+
 
         tmpSign = (encoder2_pos < 0) ? "-" : "";
         tmpVal = (encoder2_pos < 0) ? -encoder2_pos : encoder2_pos;
-        
+
         tmpInt1 = tmpVal;
         tmpFrac = tmpVal - tmpInt1;
         tmpInt2 = trunc(tmpFrac * 10000);
@@ -198,7 +198,7 @@ main(void)
 
         tmpSign = (duty_1 < 0) ? "-" : "";
         tmpVal = (duty_1 < 0) ? -duty_1 : duty_1;
-        
+
         tmpInt1 = tmpVal;
         tmpFrac = tmpVal - tmpInt1;
         tmpInt2 = trunc(tmpFrac * 10000);
@@ -207,7 +207,7 @@ main(void)
 
         tmpSign = (duty_2 < 0) ? "-" : "";
         tmpVal = (duty_2 < 0) ? -duty_2 : duty_2;
-        
+
         tmpInt1 = tmpVal;
         tmpFrac = tmpVal - tmpInt1;
         tmpInt2 = trunc(tmpFrac * 10000);
@@ -231,22 +231,22 @@ hardware_setup (void)
     SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
                        SYSCTL_XTAL_16MHZ);
 	SysCtlDelay((uint32_t)SysCtlClockGet);
-    
+
     uart_configure();
 
     qei_module0_config(MOTOR1_RATIO, ENCODER1_PULSES, true);
     qei_module1_config(MOTOR2_RATIO, ENCODER2_PULSES, false);
-    
+
     motor1_configure(PWM_P);
     motor2_configure(PWM_P);
-    
+
     timer0configure(150u);
     timer1configure(1u);
     while(!timer1_status)
     {
         timer1_status = is_timer1_done();
     }
-    
+
     pid_config(0u, KP_POS_0_0, KI_POS_0_0, KD_POS_0_0);
     pid_config(1u, KP_POS_1_0, KI_POS_1_0, KD_POS_1_0);
 }
