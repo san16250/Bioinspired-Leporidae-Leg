@@ -17,6 +17,7 @@
 #include <math.h>
 
 #include "inc/hw_memmap.h"
+#include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/pwm.h"
 #include "Libraries/Uartstdio/uartstdio.h"
@@ -26,6 +27,7 @@
 #include "Libraries/Timer0/timer0lib.h"
 #include "Libraries/Timer1/timer1lib.h"
 #include "Libraries/pidlib/pidlib.h"
+#include "Libraries/mpu6050/mpu6050.h"
 
 #define MOTOR1_ENABLE (1u)
 #define MOTOR1_RATIO (75u)
@@ -54,6 +56,7 @@ __error__(char *pcFilename, uint32_t ui32Line)
 }
 #endif
 
+void hardware_setup (void);
 
 uint32_t g_ui32Flags;
 static bool timer1_status = false;
@@ -249,6 +252,8 @@ hardware_setup (void)
 
     pid_config(0u, KP_POS_0_0, KI_POS_0_0, KD_POS_0_0);
     pid_config(1u, KP_POS_1_0, KI_POS_1_0, KD_POS_1_0);
+
+    mpu6050_init(0x68);
 }
 
 /*** end of file ***/

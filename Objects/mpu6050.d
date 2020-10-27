@@ -1,0 +1,9 @@
+.\objects\mpu6050.o: Libraries\mpu6050\mpu6050.c
+.\objects\mpu6050.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\mpu6050.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\mpu6050.o: C:\ti\TivaWare_C_Series-2.1.4.178\inc/hw_memmap.h
+.\objects\mpu6050.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/pin_map.h
+.\objects\mpu6050.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/gpio.h
+.\objects\mpu6050.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/i2c.h
+.\objects\mpu6050.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/sysctl.h
+.\objects\mpu6050.o: .\Libraries/mpu6050/mpu6050.h
