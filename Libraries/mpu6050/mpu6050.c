@@ -50,8 +50,7 @@ mpu6050_single_write (uint8_t mpu6050_address, uint8_t reg, uint8_t reg_value)
 /*!
  * @brief Configuration for the MPU6050.
  *
- * @param[in] num1 The first number to be compared.
- * @param[in] num2 The second number to be compared.
+ * @param[in] mpu6050_address The address of the MPU6050 as a slave.
  *
  * @return void.
  */
@@ -74,9 +73,8 @@ mpu6050_init (uint8_t mpu6050_address)
  *
  * @param[in] mpu6050_address The address of the MPU6050 as a slave.
  * @param[in] reg The register to write.
- * @param[in] reg_value The value to set in the register
  *
- * @return void.
+ * @return The value of the register as a uint8_t.
  */
 uint8_t
 mpu6050_single_read (uint8_t mpu6050_address, uint8_t reg)
@@ -93,6 +91,46 @@ mpu6050_single_read (uint8_t mpu6050_address, uint8_t reg)
     {
     }
 return (uint8_t)I2CMasterDataGet(I2C0_BASE);
+}
+
+/*!
+ * @brief Read a single register of the MPU6050.
+ *
+ * @param[in] mpu6050_address The address of the MPU6050 as a slave.
+ * @param[in] reg The register to write.
+ *
+ * @return The value of the register as a uint8_t.
+ */
+void
+mpu6050_burst_read (uint8_t mpu6050_address, uint8_t reg_init, uint8_t reg_end,
+                    uint8_t * addr_value)
+{
+    
+    I2CMasterSlaveAddrSet(I2C0_BASE, mpu6050_address, false);
+    I2CMasterDataPut(I2C0_BASE, reg_init);
+    I2CMasterControl(I2C0_BASE, I2C_MASTER_CMD_SINGLE_SEND);
+    while(I2CMasterBusy(I2C0_BASE))
+    {
+    }
+    I2CMasterSlaveAddrSet(I2C0_BASE, mpu6050_address, true);
+    I2CMasterControl(I2C0_BASE, I2C_MASTER_CMD_BURST_RECEIVE_START);
+    while(I2CMasterBusy(I2C0_BASE))
+    {
+    }
+    *addr_value++ = (uint8_t)I2CMasterDataGet(I2C0_BASE);
+    for (uint8_t i = reg_init + 1; i < reg_end; i++)
+    {
+        I2CMasterControl(I2C0_BASE, I2C_MASTER_CMD_BURST_RECEIVE_CONT);
+        while(I2CMasterBusy(I2C0_BASE))
+        {
+        }
+        *addr_value++ = (uint8_t)I2CMasterDataGet(I2C0_BASE);
+    }
+    I2CMasterControl(I2C0_BASE, I2C_MASTER_CMD_BURST_RECEIVE_FINISH);
+    while(I2CMasterBusy(I2C0_BASE))
+    {
+    }
+    *addr_value++ = (uint8_t)I2CMasterDataGet(I2C0_BASE);
 }
 
 /*** end of file ***/

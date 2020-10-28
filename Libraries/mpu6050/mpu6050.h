@@ -18,6 +18,8 @@ void mpu6050_init(uint8_t mpu6050_address);
 void mpu6050_single_write(uint8_t mpu6050_address, uint8_t reg,
                           uint8_t reg_value);
 uint8_t mpu6050_single_read(uint8_t mpu6050_address, uint8_t reg);
+void mpu6050_burst_read(uint8_t mpu6050_address, uint8_t reg_init,
+                        uint8_t reg_end, uint8_t * addr_value);
 
 #endif /* MPU6050_H */
 

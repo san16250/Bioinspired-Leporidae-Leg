@@ -56,6 +56,11 @@ __error__(char *pcFilename, uint32_t ui32Line)
 }
 #endif
 
+#define SENSITIVITY_SCALE_ACCEL (16384.0f)
+#define SENSITIVITY_SCALE_GYRO (131.0f)
+#define GYRO_OFF_X (-1.60793f)
+#define GYRO_OFF_Y (-0.65853f)
+
 void hardware_setup (void);
 
 uint32_t g_ui32Flags;
@@ -98,6 +103,30 @@ void hardware_setup (void);
 int
 main(void)
 {
+    struct Adrr_value
+    {
+        uint8_t accel_xout_h;
+        uint8_t accel_xout_l;
+        uint8_t accel_yout_h;
+        uint8_t accel_yout_l;
+        uint8_t accel_zout_h;
+        uint8_t accel_zout_l;
+        uint8_t temp_out_h;
+        uint8_t temp_out_l;
+        uint8_t gyro_xout_h;
+        uint8_t gyro_xout_l;
+        uint8_t gyro_yout_h;
+        uint8_t gyro_yout_l;
+        uint8_t gyro_zout_h;
+        uint8_t gyro_zout_l;
+    } adrr_value;
+    uint16_t accel_xout;
+    uint16_t accel_yout;
+    uint16_t accel_zout;
+    uint16_t temp_out;
+    uint16_t gyro_xout;
+    uint16_t gyro_yout;
+    uint16_t gyro_zout;
     hardware_setup();
     #ifndef NDEBUG
     char * tmpSign;
@@ -216,6 +245,19 @@ main(void)
         tmpInt2 = trunc(tmpFrac * 10000);
         UARTprintf("Error 2: %s%d.%04d\n", tmpSign, tmpInt1, tmpInt2);
         #endif
+        
+        adrr_value.accel_yout_h = 0;
+        adrr_value.accel_yout_l = 0;
+        mpu6050_burst_read(0x68, 0x3B, 0x48, (uint8_t *)&adrr_value);
+        accel_xout = ((adrr_value.accel_xout_h << 8) | adrr_value.accel_xout_l);
+        accel_yout = ((adrr_value.accel_yout_h << 8) | adrr_value.accel_yout_l);
+        accel_zout = ((adrr_value.accel_zout_h << 8) | adrr_value.accel_zout_l);
+        temp_out = ((adrr_value.temp_out_h << 8) | adrr_value.temp_out_l);
+        gyro_xout = ((adrr_value.gyro_xout_h << 8) | adrr_value.gyro_xout_l);
+        gyro_yout = ((adrr_value.gyro_yout_h << 8) | adrr_value.gyro_yout_l);
+        gyro_zout = ((adrr_value.gyro_zout_h << 8) | adrr_value.gyro_zout_l);
+        UARTprintf("%u\n", gyro_zout);
+
     }
 }
 
