@@ -94,12 +94,14 @@ return (uint8_t)I2CMasterDataGet(I2C0_BASE);
 }
 
 /*!
- * @brief Read a single register of the MPU6050.
+ * @brief Read a multiple registers of the MPU6050.
  *
  * @param[in] mpu6050_address The address of the MPU6050 as a slave.
- * @param[in] reg The register to write.
+ * @param[in] reg_init The register to start reading.
+ * @param[in] reg_end The register in which to stop reading. (included)
+ * @param[in] The pointer of a structure to store the register's values.
  *
- * @return The value of the register as a uint8_t.
+ * @return void.
  */
 void
 mpu6050_burst_read (uint8_t mpu6050_address, uint8_t reg_init, uint8_t reg_end,

@@ -49,19 +49,28 @@
 
 #define UART (1u)
 
-#ifdef DEBUG
+#define SENSITIVITY_SCALE_ACCEL (16384.0f)
+#define SENSITIVITY_SCALE_GYRO (131.0f)
+#define GYRO_OFF_X (-1.41185f)
+#define GYRO_OFF_Y (-0.54515f)
+#define GYRO_OFF_Z (-1.07898f)
+#define ACC_X_MAX (1.0083f)
+#define ACC_Y_MAX (1.0110f)
+#define ACC_Z_MAX (1.0000f)
+#define ACC_X_MIN (-0.9800f)
+#define ACC_Y_MIN (-0.9749f)
+#define ACC_Z_MIN (-1.0333f)
+#define TIME_SAMPLE (0.0170f)
+#define LAMBDA (0.9795f)
+#define NDEBUG (1u)
+
+
+#ifndef NDEBUG
 void
 __error__(char *pcFilename, uint32_t ui32Line)
 {
 }
 #endif
-
-#define SENSITIVITY_SCALE_ACCEL (16384.0f)
-#define SENSITIVITY_SCALE_GYRO (131.0f)
-#define GYRO_OFF_X (-1.60793f)
-#define GYRO_OFF_Y (-0.65853f)
-
-void hardware_setup (void);
 
 uint32_t g_ui32Flags;
 static bool timer1_status = false;
@@ -103,6 +112,7 @@ void hardware_setup (void);
 int
 main(void)
 {
+    hardware_setup();
     struct Adrr_value
     {
         uint8_t accel_xout_h;
@@ -120,14 +130,37 @@ main(void)
         uint8_t gyro_zout_h;
         uint8_t gyro_zout_l;
     } adrr_value;
-    uint16_t accel_xout;
-    uint16_t accel_yout;
-    uint16_t accel_zout;
-    uint16_t temp_out;
-    uint16_t gyro_xout;
-    uint16_t gyro_yout;
-    uint16_t gyro_zout;
-    hardware_setup();
+    int16_t accel_xout;
+    int16_t accel_yout;
+    int16_t accel_zout;
+    int16_t gyro_xout;
+    int16_t gyro_yout;
+    int16_t gyro_zout;
+    float ax;
+    float ay;
+    float az;
+    float wx;
+    float wx_n_1;
+    float wy;
+    float wy_n_1;
+    float wz;
+    float phi;
+    float theta;
+    float temp;
+    float phi_n;
+    float phi_n_1;
+    float theta_n;
+    float theta_n_1;
+    float phi_gyro;
+    float phi_gyro_n_1;
+    float theta_gyro;
+    float theta_gyro_n_1;
+    float phi_accel;
+    float phi_accel_n_1;
+    float theta_accel;
+    float theta_accel_n_1;
+    float roll;
+    float pitch;
     #ifndef NDEBUG
     char * tmpSign;
     float tmpVal;
@@ -246,18 +279,147 @@ main(void)
         UARTprintf("Error 2: %s%d.%04d\n", tmpSign, tmpInt1, tmpInt2);
         #endif
         
-        adrr_value.accel_yout_h = 0;
-        adrr_value.accel_yout_l = 0;
         mpu6050_burst_read(0x68, 0x3B, 0x48, (uint8_t *)&adrr_value);
-        accel_xout = ((adrr_value.accel_xout_h << 8) | adrr_value.accel_xout_l);
-        accel_yout = ((adrr_value.accel_yout_h << 8) | adrr_value.accel_yout_l);
-        accel_zout = ((adrr_value.accel_zout_h << 8) | adrr_value.accel_zout_l);
-        temp_out = ((adrr_value.temp_out_h << 8) | adrr_value.temp_out_l);
+        // Sorting the accelerometer values to make a hole uint16_t variable.
+        //
+        accel_xout = ((adrr_value.accel_xout_h << 8) |
+                       adrr_value.accel_xout_l);
+        accel_yout = ((adrr_value.accel_yout_h << 8) |
+                       adrr_value.accel_yout_l);
+        accel_zout = ((adrr_value.accel_zout_h << 8) |
+                       adrr_value.accel_zout_l);
         gyro_xout = ((adrr_value.gyro_xout_h << 8) | adrr_value.gyro_xout_l);
         gyro_yout = ((adrr_value.gyro_yout_h << 8) | adrr_value.gyro_yout_l);
         gyro_zout = ((adrr_value.gyro_zout_h << 8) | adrr_value.gyro_zout_l);
-        UARTprintf("%u\n", gyro_zout);
 
+        //Obtaining the measurements with the unit g.
+        //
+        ax = accel_xout/SENSITIVITY_SCALE_ACCEL;
+        #ifndef NDEBUG
+        tmpSign = (ax < 0) ? "-" : "";
+        tmpVal = (ax < 0) ? -ax : ax;
+
+        tmpInt1 = tmpVal;
+        tmpFrac = tmpVal - tmpInt1;
+        tmpInt2 = trunc(tmpFrac * 10000);
+        UARTprintf("%s%d.%04d\n", tmpSign, tmpInt1, tmpInt2);
+        #endif
+
+        ay = accel_yout/SENSITIVITY_SCALE_ACCEL;
+        #ifndef NDEBUG
+        tmpSign = (ay < 0) ? "-" : "";
+        tmpVal = (ay < 0) ? -ay : ay;
+
+        tmpInt1 = tmpVal;
+        tmpFrac = tmpVal - tmpInt1;
+        tmpInt2 = trunc(tmpFrac * 10000);
+        UARTprintf("%s%d.%04d\n", tmpSign, tmpInt1, tmpInt2);
+        #endif
+
+        az = accel_zout/SENSITIVITY_SCALE_ACCEL;
+        #ifndef NDEBUG
+        tmpSign = (az < 0) ? "-" : "";
+        tmpVal = (az < 0) ? -az : az;
+
+        tmpInt1 = tmpVal;
+        tmpFrac = tmpVal - tmpInt1;
+        tmpInt2 = trunc(tmpFrac * 10000);
+        UARTprintf("%s%d.%04d\n", tmpSign, tmpInt1, tmpInt2);
+        #endif
+
+        wx = gyro_xout/SENSITIVITY_SCALE_GYRO;
+        #ifndef NDEBUG
+        tmpSign = (wx < 0) ? "-" : "";
+        tmpVal = (wx < 0) ? -wx : wx;
+
+        tmpInt1 = tmpVal;
+        tmpFrac = tmpVal - tmpInt1;
+        tmpInt2 = trunc(tmpFrac * 10000);
+        UARTprintf("%s%d.%04d, ", tmpSign, tmpInt1, tmpInt2);
+        #endif
+
+        wy = gyro_yout/SENSITIVITY_SCALE_GYRO;
+        #ifndef NDEBUG
+        tmpSign = (wy < 0) ? "-" : "";
+        tmpVal = (wy < 0) ? -wy : wy;
+
+        tmpInt1 = tmpVal;
+        tmpFrac = tmpVal - tmpInt1;
+        tmpInt2 = trunc(tmpFrac * 10000);
+        UARTprintf("%s%d.%04d, ", tmpSign, tmpInt1, tmpInt2);
+        #endif
+
+        wz = gyro_zout/SENSITIVITY_SCALE_GYRO;
+        #ifndef NDEBUG
+        tmpSign = (wz < 0) ? "-" : "";
+        tmpVal = (wz < 0) ? -wz : wz;
+
+        tmpInt1 = tmpVal;
+        tmpFrac = tmpVal - tmpInt1;
+        tmpInt2 = trunc(tmpFrac * 10000);
+        UARTprintf("%s%d.%04d\n", tmpSign, tmpInt1, tmpInt2);
+        #endif
+
+        // Normalizing the vectors.
+        //
+        wx = wx - GYRO_OFF_X;
+        wy = wy - GYRO_OFF_Y;
+        wz = wz - GYRO_OFF_Z;
+
+        ax = (2*ax - (ACC_X_MAX + ACC_X_MIN)) / (ACC_X_MAX - ACC_X_MIN);
+        ay = (2*ay - (ACC_Y_MAX + ACC_Y_MIN)) / (ACC_Y_MAX - ACC_Y_MIN);
+        az = (2*az - (ACC_Z_MAX + ACC_Z_MIN)) / (ACC_Z_MAX - ACC_Z_MIN);
+
+        // Estimates for the roll and pitch from accelerometer values.
+        phi = -57.3 * atan2(ax, ay);
+        temp = sqrt(ax * ax + az * az);
+        theta = 57.3 * atan2(ay, temp);
+
+        // Estimates for the roll and pitch from gyroscope values.
+        phi_n = 0.5f * TIME_SAMPLE * (wx + wx_n_1) + phi_n_1;
+        theta_n = 0.5f * TIME_SAMPLE * (wy + wy_n_1) + theta_n_1;
+
+        wx_n_1 = wx;
+        wy_n_1 = wy;
+        phi_n_1 = phi_n;
+        theta_n_1 = theta_n;
+
+        // Complimentary filtered system implementing a Lowpass filter.
+        // This is used to filter the high-frequency noise from the
+        // accelerometer and filter the low-frequency noise form the
+        // gyroscope.
+        //
+        phi_gyro = LAMBDA * (phi_n - phi_n_1 + phi_gyro_n_1);
+        theta_gyro = LAMBDA * (theta_n - theta_n_1 + theta_gyro_n_1);
+
+        phi_accel = ((1 - LAMBDA) * phi) + (LAMBDA * phi_accel_n_1);
+        theta_accel = ((1 - LAMBDA) * theta) + (LAMBDA * theta_accel_n_1);
+
+        phi_gyro_n_1 = phi_gyro;
+        theta_gyro_n_1 = theta_gyro;
+        phi_accel_n_1 = phi_accel;
+        theta_accel_n_1 = theta_accel;
+
+        // Printing the values for the roll and pitch angles as degrees,
+        // using float type variables.
+        //
+        roll = phi_gyro + phi_accel;
+        tmpSign = (roll < 0) ? "-" : "";
+        tmpVal = (roll < 0) ? -roll : roll;
+
+        tmpInt1 = tmpVal;
+        tmpFrac = tmpVal - tmpInt1;
+        tmpInt2 = trunc(tmpFrac * 10000);
+        UARTprintf("%s%d.%04d, ", tmpSign, tmpInt1, tmpInt2);
+
+        pitch = theta_gyro + theta_accel;
+        tmpSign = (pitch < 0) ? "-" : "";
+        tmpVal = (pitch < 0) ? -pitch : pitch;
+
+        tmpInt1 = tmpVal;
+        tmpFrac = tmpVal - tmpInt1;
+        tmpInt2 = trunc(tmpFrac * 10000);
+        UARTprintf("%s%d.%04d\n", tmpSign, tmpInt1, tmpInt2);
     }
 }
 
