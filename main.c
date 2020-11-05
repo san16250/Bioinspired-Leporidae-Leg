@@ -1,9 +1,15 @@
-//*****************************************************************************
-// Christian Sandoval
-// 16250
-// Programa para control de ambas piernas con PID
-// Creado 13/07/2020
-//*****************************************************************************
+/** @file main.c
+ *
+ * @brief Main module to manage all the operations
+ *
+ * @par
+ * COPYRIGHT NOTICE: (c) 2018 Barr Group. All rights reserved.
+ * Propietary: Christian Sandoval - san16250@uvg.edu.gt
+ * Universidad del Valle de Guatemala.
+ * 
+ * Please cite this code if used even if its just some parts.
+ *
+ */
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -76,7 +82,7 @@ float KD_POS_1_1 = 15;
 //ARM PID instance, float_32 format
 arm_pid_instance_f32 PID_1;
 
-bool MOTOR2 = true;				//False -> OFF			True -> ON
+bool MOTOR2 = false;				//False -> OFF			True -> ON
 
 //*****************************************************************************
 // Program constants
