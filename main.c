@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
+
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_gpio.h"
@@ -31,6 +32,8 @@
 #include "driverlib/pwm.h"
 #include "Libraries/Uartstdio/uartstdio.h"
 #include "arm_math.h"
+#include "Libraries/encoder/encoder.h"
+#include "Libraries/motor/motor.h"
 #include "Libraries/Uart/uartlib.h"
 #include "Libraries/Timer0/timer0lib.h"
 #include "Libraries/Timer1/timer1lib.h"
@@ -82,7 +85,7 @@ float KD_POS_1_1 = 15;
 //ARM PID instance, float_32 format
 arm_pid_instance_f32 PID_1;
 
-bool MOTOR2 = false;				//False -> OFF			True -> ON
+bool MOTOR2 = true;				//False -> OFF			True -> ON
 
 //*****************************************************************************
 // Program constants
@@ -117,11 +120,8 @@ bool motor_enable = true;
 //*****************************************************************************
 uint32_t g_ui32Flags;
 
-//*****************************************************************************
-//
-// The error routine that is called if the driver library encounters an error.
-//
-//*****************************************************************************
+#define NDEBUG
+
 #ifdef DEBUG
 void
 __error__(char *pcFilename, uint32_t ui32Line)
@@ -129,58 +129,14 @@ __error__(char *pcFilename, uint32_t ui32Line)
 }
 #endif
 
+void hardware_setup (void);
+
 //*****************************************************************************
 //
 // Configuration of Motor 1
 //
 //*****************************************************************************
-void
-Motor1Config(void)
-{
-	//***************************************************************************
-	// Configuration of the quadrature encoder
-	//***************************************************************************
-	// Enable QEI Module 0 pins
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_QEI0);
 
-
-	// Wait for the QEI0 module to be ready.
-	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_QEI0))
-	{
-	}
-
-	// Unlock pin PD7
-	HWREG(GPIO_PORTD_BASE + GPIO_O_LOCK) = GPIO_LOCK_KEY;
-	HWREG(GPIO_PORTD_BASE + GPIO_O_CR) |= 0x80;
-	HWREG(GPIO_PORTD_BASE + GPIO_O_LOCK) = 0;
-
-	// Set pins for PHA0 and PHB0
-	GPIOPinConfigure(GPIO_PD6_PHA0);
-	GPIOPinConfigure(GPIO_PD7_PHB0);
-
-	// Configure pins for use by the QEI peripheral
-	GPIOPinTypeQEI(GPIO_PORTD_BASE, GPIO_PIN_6 | GPIO_PIN_7);
-
-	//Make sure quadrature encoder is off
-	QEIDisable(QEI0_BASE);
-	QEIIntDisable(QEI0_BASE,QEI_INTERROR | QEI_INTDIR |
-		QEI_INTTIMER | QEI_INTINDEX);
-
-	//Configure quadrature encoder using FT0481 top limit
-	QEIConfigure(QEI0_BASE, (QEI_CONFIG_CAPTURE_A_B | QEI_CONFIG_NO_RESET |
-		QEI_CONFIG_QUADRATURE | QEI_CONFIG_SWAP), MOTOR1_RATIO*ENCODER1_PULSES*2);
-
-	//Enable quadrature encoder
-	QEIEnable(QEI0_BASE);
-
-	QEIPositionSet(QEI0_BASE, MOTOR1_RATIO*ENCODER1_PULSES);
-
-	//Enable noise filter
-	QEIFilterDisable(QEI0_BASE);
-	QEIFilterConfigure(QEI0_BASE, QEI_FILTCNT_2);
-	QEIFilterEnable(QEI0_BASE);
-}
 
 //*****************************************************************************
 //
@@ -240,103 +196,162 @@ Motor2Config(void)
 int
 main(void)
 {
-    //
-    // Set the clocking to run directly from the crystal.
-    //
-    ROM_SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
-                       SYSCTL_XTAL_16MHZ);
-	SysCtlDelay((uint32_t)ROM_SysCtlClockGet);
-		if (uart_fcn == true) motor_enable = false;
-		pwm_period = (float)(SysCtlClockGet()/PWM_P);
-		UARTConfigure();
+//    if (uart_fcn == true) motor_enable = false;
+//    pwm_period = (float)(SysCtlClockGet()/PWM_P);
+//    UARTConfigure();
 
-		if (uart_fcn == false)
-		{
-			Timer0Configure();
-			Timer1Configure();
-			if(MOTOR1 == true)
-			{
-				Motor1Config();
-				PWMGen2Configure();
-				pid1Config();
-			}
+//    if (uart_fcn == false)
+//    {
+//        Timer0Configure();
+//        Timer1Configure();
+//        if(MOTOR1 == true)
+//        {
+//            Motor1Config();
+//            PWMGen2Configure();
+//            pid1Config();
+//        }
 
-			if(MOTOR2 == true)
-			{
-				Motor2Config();
-				PWMGen0Configure();
-				pid2Config();
-			}
-	  }
-
-
-		Timer0Configure();
-		Timer1Configure();
-		if (MOTOR1 == true)
-		{
-			Motor1Config();
-			PWMGen2Configure();
-			pid1Config();
-		}
-		if (MOTOR2 == true)
-		{
-			Motor2Config();
-			PWMGen0Configure();
-			pid2Config();
-		}
-
+//    if(MOTOR2 == true)
+//    {
+//        Motor2Config();
+//        PWMGen0Configure();
+//        pid2Config();
+//    }
+//    }
+//    Timer0Configure();
+//    Timer1Configure();
+//    if (MOTOR1 == true)
+//    {
+//        Motor1Config();
+//        PWMGen2Configure();
+//        pid1Config();
+//    }
+//    if (MOTOR2 == true)
+//    {
+//        Motor2Config();
+//        PWMGen0Configure();
+//        pid2Config();
+//    }
+    hardware_setup();
+    #ifndef NDEBUG
+    char * tmpSign;
+    float tmpVal;
+    int32_t tmpInt1;
+    float tmpFrac;
+    int32_t tmpInt2;
+    #endif
+    float encoder1_pos;
+    float encoder2_pos;
     while(1)
     {
-			//
-			// PID motor 1
-			//
-			if (MOTOR1 == true)
-			{
-				if (SysCtlPeripheralReady(SYSCTL_PERIPH_QEI0))
-				{
-					current_pos_0 = ((float)QEIPositionGet(QEI0_BASE)*(360.0/(MOTOR1_RATIO*ENCODER1_PULSES)));
-				}
-				// Calculamos el error
-				if (time_flag == false)
-				{
-					pid_error_0 = WANTED_POS_0_0 - current_pos_0;
-				}
-				if (time_flag == true)
-				{
-					pid_error_0 = WANTED_POS_0_1 - current_pos_0;
-				}
-			}
+        encoder1_pos = get_position_in_degrees(QEI0_BASE, MOTOR1_RATIO,
+                                               ENCODER1_PULSES);
+        #ifndef NDEBUG
+        tmpSign = (encoder1_pos < 0) ? "-" : "";
+        tmpVal = (encoder1_pos < 0) ? -encoder1_pos : encoder1_pos;
+        
+        tmpInt1 = tmpVal;
+        tmpFrac = tmpVal - tmpInt1;
+        tmpInt2 = trunc(tmpFrac * 10000);
+        UARTprintf("Encoder 1: %s%d.%04d, ", tmpSign, tmpInt1, tmpInt2);
+        #endif
+        
+        encoder2_pos = get_position_in_degrees(QEI1_BASE, MOTOR2_RATIO,
+                                               ENCODER2_PULSES);
+        #ifndef NDEBUG
+        tmpSign = (encoder2_pos < 0) ? "-" : "";
+        tmpVal = (encoder2_pos < 0) ? -encoder2_pos : encoder2_pos;
+        
+        tmpInt1 = tmpVal;
+        tmpFrac = tmpVal - tmpInt1;
+        tmpInt2 = trunc(tmpFrac * 10000);
+        UARTprintf("Encoder 2: %s%d.%04d\n", tmpSign, tmpInt1, tmpInt2);
+        #endif
+//			//
+//			// PID motor 1
+//			//
+//			if (MOTOR1 == true)
+//			{
+//				if (SysCtlPeripheralReady(SYSCTL_PERIPH_QEI0))
+//				{
+//					current_pos_0 = ((float)QEIPositionGet(QEI0_BASE)*(360.0/(MOTOR1_RATIO*ENCODER1_PULSES)));
+//				}
+//				// Calculamos el error
+//				if (time_flag == false)
+//				{
+//					pid_error_0 = WANTED_POS_0_0 - current_pos_0;
+//				}
+//				if (time_flag == true)
+//				{
+//					pid_error_0 = WANTED_POS_0_1 - current_pos_0;
+//				}
+//			}
 
-			//
-			// PID motor 2
-			//
-			if(MOTOR2 == true)
-			{
-				if (SysCtlPeripheralReady(SYSCTL_PERIPH_QEI1))
-				{
-					current_pos_1 = ((float)QEIPositionGet(QEI1_BASE)*(360.0/(MOTOR2_RATIO*ENCODER2_PULSES)));
-				}
-				// Calculamos el error
-				if (time_flag == false) pid_error_1 = WANTED_POS_1_0 - current_pos_1;
-				if (time_flag == true) pid_error_1 = WANTED_POS_1_1 - current_pos_1;
-			}
+//			//
+//			// PID motor 2
+//			//
+//			if(MOTOR2 == true)
+//			{
+//				if (SysCtlPeripheralReady(SYSCTL_PERIPH_QEI1))
+//				{
+//					current_pos_1 = ((float)QEIPositionGet(QEI1_BASE)*(360.0/(MOTOR2_RATIO*ENCODER2_PULSES)));
+//				}
+//				// Calculamos el error
+//				if (time_flag == false) pid_error_1 = WANTED_POS_1_0 - current_pos_1;
+//				if (time_flag == true) pid_error_1 = WANTED_POS_1_1 - current_pos_1;
+//			}
 
-		if (counter >= 2)
-		{
-			ROM_SysCtlPeripheralDisable(SYSCTL_PERIPH_TIMER1);
-			motor_enable = true;
-		}
-			//UARTprintf("%i \n", (int32_t)time_flag);
-			//if (MOTOR1 == true && MOTOR2 == false) UARTprintf("%i, %i, %i\n",(int32_t)current_pos_0, (int32_t)pid_error_0, (int32_t)duty_0);
-			// Current Pos in UART
+//		if (counter >= 2)
+//		{
+//			ROM_SysCtlPeripheralDisable(SYSCTL_PERIPH_TIMER1);
+//			motor_enable = true;
+//		}
+//			//UARTprintf("%i \n", (int32_t)time_flag);
+//			//if (MOTOR1 == true && MOTOR2 == false) UARTprintf("%i, %i, %i\n",(int32_t)current_pos_0, (int32_t)pid_error_0, (int32_t)duty_0);
+//			// Current Pos in UART
 
-			if (MOTOR1 == true && MOTOR2 == false) UARTprintf("%3u , %3i\n",(uint32_t)current_pos_0, (int32_t)duty_0);
+//			if (MOTOR1 == true && MOTOR2 == false) UARTprintf("%3u , %3i\n",(uint32_t)current_pos_0, (int32_t)duty_0);
 
-			if (MOTOR1 == true && MOTOR2 == false) UARTprintf("%3u\n",(uint32_t)current_pos_0);
+//			if (MOTOR1 == false && MOTOR2 == true) UARTprintf("%3u\n",(uint32_t)current_pos_1);
 
-			if (MOTOR1 == true && MOTOR2 == true)UARTprintf("%3u, %3u \n", (uint32_t)current_pos_0,
-				(uint32_t)current_pos_1);
+//			if (MOTOR1 == true && MOTOR2 == true)UARTprintf("%3u, %3u \n", (uint32_t)current_pos_0,
+//				(uint32_t)current_pos_1);
 
 
     }
 }
+
+/*!
+ * @brief Identify the larger of two 8-bit integers.
+ *
+ * @param[in] num1 The first number to be compared.
+ * @param[in] num2 The second number to be compared.
+ *
+ * @return The value of the larger number.
+ */
+void
+hardware_setup (void)
+{
+    // Setting the system clock to 80Mhz.
+    //
+    SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
+                       SYSCTL_XTAL_16MHZ);
+	SysCtlDelay((uint32_t)SysCtlClockGet);
+    
+    // UART0 module configure
+    //
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+    GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+    UARTStdioConfig(0, 115200, SysCtlClockGet());
+    
+    qei_module0_config(MOTOR1_RATIO, ENCODER1_PULSES, false);
+    
+    qei_module1_config(MOTOR2_RATIO, ENCODER2_PULSES, true);
+    
+    motor1_configure(PWM_P);
+    //motor_velocity_write(PWM0_BASE, PWM_GEN_0, -60, PWM_P);
+    
+    motor2_configure(PWM_P);
+}
+
+/*** end of file ***/

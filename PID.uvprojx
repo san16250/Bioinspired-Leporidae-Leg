@@ -383,11 +383,6 @@
           <GroupName>Source Group 1</GroupName>
           <Files>
             <File>
-              <FileName>startup_rvmdk.S</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\..\MiniProyecto\Programacion\QEI\startup_rvmdk.S</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\main.c</FilePath>
@@ -396,6 +391,11 @@
               <FileName>pidlib.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\pidlib.c</FilePath>
+            </File>
+            <File>
+              <FileName>startup_rvmdk.S</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\startup_rvmdk.S</FilePath>
             </File>
           </Files>
         </Group>
@@ -431,6 +431,16 @@
               <FileName>uartstdio.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Libraries\Uartstdio\uartstdio.c</FilePath>
+            </File>
+            <File>
+              <FileName>motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\motor\motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>encoder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\encoder\encoder.c</FilePath>
             </File>
           </Files>
         </Group>

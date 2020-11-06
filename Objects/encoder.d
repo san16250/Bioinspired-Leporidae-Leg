@@ -1,0 +1,11 @@
+.\objects\encoder.o: Libraries\encoder\encoder.c
+.\objects\encoder.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\encoder.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\encoder.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/gpio.h
+.\objects\encoder.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/pin_map.h
+.\objects\encoder.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/qei.h
+.\objects\encoder.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/sysctl.h
+.\objects\encoder.o: C:\ti\TivaWare_C_Series-2.1.4.178\inc/hw_gpio.h
+.\objects\encoder.o: C:\ti\TivaWare_C_Series-2.1.4.178\inc/hw_memmap.h
+.\objects\encoder.o: C:\ti\TivaWare_C_Series-2.1.4.178\inc/hw_types.h
+.\objects\encoder.o: .\Libraries/encoder/encoder.h

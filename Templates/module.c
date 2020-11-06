@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include “module.h”
+#include "module.h"
 
 /*!
  * @brief Identify the larger of two 8-bit integers.

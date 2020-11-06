@@ -25,6 +25,8 @@
 .\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\float.h
+.\objects\main.o: Libraries/encoder/encoder.h
+.\objects\main.o: Libraries/motor/motor.h
 .\objects\main.o: Libraries/Uart/uartlib.h
 .\objects\main.o: Libraries/Timer0/timer0lib.h
 .\objects\main.o: Libraries/Timer1/timer1lib.h

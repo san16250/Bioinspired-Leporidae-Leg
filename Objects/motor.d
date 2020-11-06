@@ -1,0 +1,9 @@
+.\objects\motor.o: Libraries\motor\motor.c
+.\objects\motor.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\motor.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\motor.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/gpio.h
+.\objects\motor.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/pin_map.h
+.\objects\motor.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/pwm.h
+.\objects\motor.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/sysctl.h
+.\objects\motor.o: C:\ti\TivaWare_C_Series-2.1.4.178\inc/hw_memmap.h
+.\objects\motor.o: .\Libraries/motor/motor.h
