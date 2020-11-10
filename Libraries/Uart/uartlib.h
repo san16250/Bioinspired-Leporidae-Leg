@@ -1,21 +1,24 @@
-/** @file uartlib.h  
- *   
- * @brief Configuration and interrupt handler of timer 1  
- *  
- * @par         
- * COPYRIGHT NOTICE: Christian Sandoval - 16250  
- */  
+/** @file uartlib.h
+ *
+ * @brief Library for the initialization and the interrupt controller for the
+ * UART module.
+ *
+ * @par
+ * COPYRIGHT NOTICE: (c) 2018 Barr Group. All rights reserved.
+ * Propietary: Christian Sandoval - san16250@uvg.edu.gt
+ * Universidad del Valle de Guatemala.
+ *
+ * Please cite this code if used even if its just some parts.
+ *
+ */
  
 #ifndef UARTLIB_H
 #define UARTLIB_H 
-extern uint8_t counter;
-extern bool time_flag;
-extern bool uart_fcn;
-extern bool motor_enable;
-extern void Motor1Config(void);
-extern void Motor2Config(void);
-void UARTConfigure(void);
-void UARTIntHandler(void);
+
+void uart_configure(void);
+bool is_character_received(void);
+void uart_clear(void);
+void uart_isr(void);
  
 #endif /* UARTLIB */ 
  

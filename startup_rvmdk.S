@@ -78,11 +78,9 @@ __heap_limit
 ; External declaration for the interrupt handler used by the application.
 ;
 ;******************************************************************************
-		EXTERN	Timer0IntHandler
-		EXTERN	Timer1IntHandler
-		EXTERN	PWMGen0IntHandler
-		EXTERN	PWMGen2IntHandler
-		EXTERN	UARTIntHandler
+		EXTERN	timer0_isr
+		EXTERN	timer1_isr
+		EXTERN	uart_isr
 
 ;******************************************************************************
 ;
@@ -112,23 +110,23 @@ __Vectors
         DCD     IntDefaultHandler           ; GPIO Port C
         DCD     IntDefaultHandler           ; GPIO Port D
         DCD     IntDefaultHandler           ; GPIO Port E
-        DCD     UARTIntHandler           	; UART0 Rx and Tx
+        DCD     uart_isr		            ; UART0 Rx and Tx
         DCD     IntDefaultHandler           ; UART1 Rx and Tx
         DCD     IntDefaultHandler           ; SSI0 Rx and Tx
         DCD     IntDefaultHandler           ; I2C0 Master and Slave
         DCD     IntDefaultHandler           ; PWM Fault
-        DCD     PWMGen0IntHandler           ; PWM Generator 0
+        DCD     IntDefaultHandler           ; PWM Generator 0
         DCD     IntDefaultHandler           ; PWM Generator 1
-        DCD     PWMGen2IntHandler           ; PWM Generator 2
+        DCD     IntDefaultHandler           ; PWM Generator 2
         DCD     IntDefaultHandler           ; Quadrature Encoder 0
         DCD     IntDefaultHandler           ; ADC Sequence 0
         DCD     IntDefaultHandler           ; ADC Sequence 1
         DCD     IntDefaultHandler           ; ADC Sequence 2
         DCD     IntDefaultHandler           ; ADC Sequence 3
         DCD     IntDefaultHandler           ; Watchdog timer
-        DCD     Timer0IntHandler            ; Timer 0 subtimer A
+        DCD     timer0_isr            		; Timer 0 subtimer A
         DCD     IntDefaultHandler           ; Timer 0 subtimer B
-        DCD     Timer1IntHandler            ; Timer 1 subtimer A
+        DCD     timer1_isr		            ; Timer 1 subtimer A
         DCD     IntDefaultHandler           ; Timer 1 subtimer B
         DCD     IntDefaultHandler           ; Timer 2 subtimer A
         DCD     IntDefaultHandler           ; Timer 2 subtimer B

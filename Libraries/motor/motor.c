@@ -117,7 +117,16 @@ motor2_configure(uint32_t pwm_period)
 	PWMOutputState(PWM0_BASE, PWM_OUT_5_BIT, false);
 }	
 
-
+/*!
+ * @brief Write a duty cycle to the pwm module
+ *
+ * @param[in] pwm_base Base used for the pwm.
+ * @param[in] pwm_out Module of the base used for the pwm.
+ * @param[in] width Duty cycle in %.
+ * @param[in] pwm_period Period for the clock of the pwm.
+ *
+ * @return Void.
+ */
 void
 motor_velocity_write(uint32_t pwm_base, uint32_t pwm_out, int32_t width,
 uint32_t pwm_period)

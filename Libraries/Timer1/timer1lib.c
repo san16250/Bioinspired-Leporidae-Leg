@@ -1,122 +1,87 @@
-/** @file timer1lib.c  
-*   
-* @brief En esta libería se implementa la configuración y el
-*  manejo de interrupciones del Timer 1.
-* @par         
-* COPYRIGHT NOTICE: Christian Sandoval - 16250.  
-*/ 
+/** @file timer1lib.c
+ *
+ * @brief Control the timer 1.
+ *
+ * @par
+ * COPYRIGHT NOTICE: (c) 2018 Barr Group. All rights reserved.
+ * Propietary: Christian Sandoval - san16250@uvg.edu.gt
+ * Universidad del Valle de Guatemala.
+ *
+ * Please cite this code if used even if its just some parts.
+ *
+ */
  
 #include <stdint.h> 
 #include <stdbool.h>
+
+#include "driverlib/interrupt.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/timer.h"
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
-#include "driverlib/timer.h"
-#include "driverlib/uart.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/rom.h"
-#include "driverlib/pwm.h"
 #include "Libraries/Timer1/timer1lib.h"
-#include "utils/uartstdio.h"
-#include "arm_math.h"
-#include "pidlib.h"
-#include "Libraries/Uart/uartlib.h"
 
+static bool timer1_status = false;
 
 /*!  
-* @brief Identify the larger of two 8-bit integers.  
+* @brief Configure the timer 1 module.
 *   
-* @param[in] None.    
+* @param[in] frequency The times in a second that the interrupt ocurrs.   
 *  
-* @return None  
+* @return Void. 
 */
 void
-Timer1Configure (void)
+timer1configure (uint32_t frequency)
 {
-		//
-    // Enable the peripherals used by this example.
-    //
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
-		//
-    // Configure the two 32-bit periodic timers.
-    //
-		ROM_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
-		ROM_TimerLoadSet(TIMER1_BASE, TIMER_A, (ROM_SysCtlClockGet()/6));
-		//
-    // Setup the interrupts for the timer timeouts.
-    //
-		ROM_IntEnable(INT_TIMER1A);
-		ROM_TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
-		//
-    // Enable the timers.
-    //
-		ROM_TimerEnable(TIMER1_BASE, TIMER_A);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
+    TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
+    TimerLoadSet(TIMER1_BASE, TIMER_A, (SysCtlClockGet()/frequency));
+    IntEnable(INT_TIMER1A);
+    TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+    TimerEnable(TIMER1_BASE, TIMER_A);
 }
 
-void
-Timer1IntHandler(uint32_t g_ui32Flags)
+/*!  
+* @brief Function that returns if the timer has accomplished its count.
+*   
+* @param[in] Void.
+*  
+* @return The timer status.
+*/
+bool
+is_timer1_done (void)
 {
-	//
-	// Despejamos las interrupciones 
-	//
-	ROM_TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+    return timer1_status;
+}
 
-	//
-	// Toggle La bandera para la primera vez
-	//
-	HWREGBITW(&g_ui32Flags, 0) ^= 1;
-	
-	
-	//UARTprintf("%u \n", counter);
-	
-	time_flag = !time_flag;
+/*!  
+* @brief Function to reset the timer flag.
+*   
+* @param[in] Void.
+*  
+* @return Void.
+*/
+void
+reset_timer1 (void)
+{
+    timer1_status = false;
+}
 
-	if (time_flag == true)
-	{
-		if (MOTOR1 == true)
-		{
-			arm_pid_reset_f32(&PID_0);
-			PID_0.Kp = KP_POS_0_0;			//Proportional
-			PID_0.Ki = KI_POS_0_0;			//Integral
-			PID_0.Kd = KD_POS_0_0;			//Derivative
-			arm_pid_init_f32(&PID_0, 1);
-		}
-		if (MOTOR2 == true)
-		{
-			arm_pid_reset_f32(&PID_1);
-			PID_1.Kp = KP_POS_1_0;			//Proportional
-			PID_1.Ki = KI_POS_1_0;			//Integral
-			PID_1.Kd = KD_POS_1_0;			//Derivative
-			arm_pid_init_f32(&PID_1, 1);
-		}
-	}
-	else
-	{
-		if (MOTOR1 == true)
-		{
-			arm_pid_reset_f32(&PID_0);
-			PID_0.Kp = KP_POS_0_1;			//Proportional
-			PID_0.Ki = KI_POS_0_1;			//Integral
-			PID_0.Kd = KD_POS_0_1;			//Derivative
-			arm_pid_init_f32(&PID_0, 1);
-		}
-		if (MOTOR2 == true)
-		{
-			arm_pid_reset_f32(&PID_1);
-			PID_1.Kp = KP_POS_1_1;			//Proportional
-			PID_1.Ki = KI_POS_1_1;			//Integral
-			PID_1.Kd = KD_POS_1_1;			//Derivative
-			arm_pid_init_f32(&PID_1, 1);
-		}
-		
-	}
-	
-	if (uart_fcn == true)
-	{
-		counter += 1;
-	}
-	ROM_IntMasterEnable();		//Habilitamos Interrupciones generales
-	
+/*!  
+* @brief Interrupt handler for the timer 0 module. 
+*   
+* @param[in] g_ui32Flags Flag of the isr.
+*  
+* @return Void. 
+*/
+void
+timer1_isr (uint32_t g_ui32Flags)
+{
+    TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+    HWREGBITW(&g_ui32Flags, 0) ^= 1;
+    timer1_status = true;
+    IntMasterEnable();
 }
  
 /*** end of file ***/

@@ -1,21 +1,23 @@
-/** @file timer0lib.h  
- *   
- * @brief Configuration and interrupt handler of timer 10 
- *  
- * @par         
- * COPYRIGHT NOTICE: Christian Sandoval - 16250  
- */  
+/** @file timer0lib.h
+ *
+ * @brief Control the timer 0.
+ *
+ * @par
+ * COPYRIGHT NOTICE: (c) 2018 Barr Group. All rights reserved.
+ * Propietary: Christian Sandoval - san16250@uvg.edu.gt
+ * Universidad del Valle de Guatemala.
+ *
+ * Please cite this code if used even if its just some parts.
+ *
+ */
  
 #ifndef TIMER0LIB_H
 #define TIMER0LIB_H
-extern bool MOTOR1; 
-extern bool MOTOR2;
-extern float duty_0, pid_error_0;
-extern float duty_1, pid_error_1;
-extern arm_pid_instance_f32 PID_0, PID_1;
 
-void Timer0Configure(void);
-void Timer0IntHandler(uint32_t g_ui32Flags);
+void timer0configure(uint32_t frequency);
+bool is_timer0_done(void);
+void reset_timer0(void);
+void timer0_isr(uint32_t g_ui32Flags);
  
 #endif /* TIMER0LIB_H */ 
  

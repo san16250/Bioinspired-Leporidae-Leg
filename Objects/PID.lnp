@@ -1,15 +1,14 @@
 --cpu=Cortex-M4.fp.sp
 ".\objects\main.o"
-".\objects\pidlib.o"
 ".\objects\startup_rvmdk.o"
 "C:\ti\TivaWare_C_Series-2.1.4.178\driverlib\rvmdk\driverlib.lib"
-".\objects\pwmlib.o"
 ".\objects\timer0lib.o"
 ".\objects\timer1lib.o"
 ".\objects\uartlib.o"
 ".\objects\uartstdio.o"
 ".\objects\motor.o"
 ".\objects\encoder.o"
+".\objects\pidlib.o"
 "..\..\..\..\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Lib\ARM\arm_cortexM4lf_math.lib"
 --strict --scatter ".\Objects\PID.sct"
 --entry Reset_Handler --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
