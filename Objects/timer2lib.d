@@ -1,0 +1,10 @@
+.\objects\timer2lib.o: Libraries\Timer2\timer2lib.c
+.\objects\timer2lib.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\timer2lib.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\timer2lib.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/interrupt.h
+.\objects\timer2lib.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/sysctl.h
+.\objects\timer2lib.o: C:\ti\TivaWare_C_Series-2.1.4.178\driverlib/timer.h
+.\objects\timer2lib.o: C:\ti\TivaWare_C_Series-2.1.4.178\inc/hw_ints.h
+.\objects\timer2lib.o: C:\ti\TivaWare_C_Series-2.1.4.178\inc/hw_memmap.h
+.\objects\timer2lib.o: C:\ti\TivaWare_C_Series-2.1.4.178\inc/hw_types.h
+.\objects\timer2lib.o: .\Libraries/Timer2/timer2lib.h

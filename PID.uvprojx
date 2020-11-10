@@ -418,11 +418,6 @@
               <FilePath>.\Libraries\Uart\uartlib.c</FilePath>
             </File>
             <File>
-              <FileName>uartstdio.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Libraries\Uartstdio\uartstdio.c</FilePath>
-            </File>
-            <File>
               <FileName>motor.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Libraries\motor\motor.c</FilePath>
@@ -436,6 +431,21 @@
               <FileName>pidlib.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Libraries\pidlib\pidlib.c</FilePath>
+            </File>
+            <File>
+              <FileName>uartstdio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>C:\ti\TivaWare_C_Series-2.1.4.178\utils\uartstdio.c</FilePath>
+            </File>
+            <File>
+              <FileName>mpu6050.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\mpu6050\mpu6050.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer2lib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Libraries\Timer2\timer2lib.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -81,6 +81,7 @@ __heap_limit
 		EXTERN	timer0_isr
 		EXTERN	timer1_isr
 		EXTERN	uart_isr
+		EXTERN	timer2_isr
 
 ;******************************************************************************
 ;
@@ -128,7 +129,7 @@ __Vectors
         DCD     IntDefaultHandler           ; Timer 0 subtimer B
         DCD     timer1_isr		            ; Timer 1 subtimer A
         DCD     IntDefaultHandler           ; Timer 1 subtimer B
-        DCD     IntDefaultHandler           ; Timer 2 subtimer A
+        DCD     timer2_isr		            ; Timer 2 subtimer A
         DCD     IntDefaultHandler           ; Timer 2 subtimer B
         DCD     IntDefaultHandler           ; Analog Comparator 0
         DCD     IntDefaultHandler           ; Analog Comparator 1
