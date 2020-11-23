@@ -42,13 +42,11 @@
 #define MOTOR2_RATIO (100u)
 #define ENCODER2_PULSES (12u)
 #define WANTED_POS_1_0 (360.0f)
-#define WANTED_POS_1_1 (280.0f)
+#define WANTED_POS_1_1 (400.0f)
 
 #define PWM_P (10000u)
 
-#if 0
 #define NDEBUG (1u)
-#endif
 
 #define UART (1u)
 
@@ -65,8 +63,12 @@
 #define ACC_Z_MIN (-1.0333f)
 #define TIME_SAMPLE (0.0170f)
 #define LAMBDA (0.9795f)
+
 #define NDEBUG_MPU
 
+#if 0
+#define MPU
+#endif
 
 #ifndef NDEBUG
 void
@@ -80,9 +82,9 @@ static bool timer1_status = false;
 /*
 * PID PARAMETERS FOR MOTOR 1
 */
-static float KP_POS_0_0 = 140.0f;
+static float KP_POS_0_0 = 5.5f;
 static float KI_POS_0_0 = 0.02599f;
-static float KD_POS_0_0 = 70.0f;
+static float KD_POS_0_0 = 2.7235f;
 static float KP_POS_0_1 = 5.5f;
 static float KI_POS_0_1 = 0.02599f;
 static float KD_POS_0_1 = 2.7235f;
@@ -95,12 +97,12 @@ static float KP_POS_1_0 = 110.0f;
 static float KI_POS_1_0 = 0.02599f;
 static float KD_POS_1_0 = 25.0f;
 #endif
-static float KP_POS_1_0 = 1.5f;
-static float KI_POS_1_0 = 0.01;
-static float KD_POS_1_0 = 15.0f;
-static float KP_POS_1_1 = 1.5f;
-static float KI_POS_1_1 = 0.1f;
-static float KD_POS_1_1 = 15.0f;
+static float KP_POS_1_0 = 5.5f;
+static float KI_POS_1_0 = 0.0f;
+static float KD_POS_1_0 = 0.5f;
+static float KP_POS_1_1 = 5.5f;
+static float KI_POS_1_1 = 0.0f;
+static float KD_POS_1_1 = 0.5f;
 
 
 void hardware_setup (void);
@@ -165,21 +167,6 @@ main(void)
     float roll;
     float pitch;
     bool timer2_status = false;
-    #ifndef NDEBUG_MPU
-    char * tmpSign;
-    float tmpVal;
-    int32_t tmpInt1;
-    float tmpFrac;
-    int32_t tmpInt2;
-    #endif
-    
-    #ifndef NDEBUG
-    char * tmpSign;
-    float tmpVal;
-    int32_t tmpInt1;
-    float tmpFrac;
-    int32_t tmpInt2;
-    #endif
     float encoder1_pos;
     float encoder2_pos;
     float error_1;
@@ -187,26 +174,18 @@ main(void)
     float duty_1;
     float duty_2;
     bool reference_change_flag = true;
-    float motor1_desired_position = 0;
+    float motor1_desired_position = WANTED_POS_0_0;
     float motor2_desired_position = 0;
     bool uart_status = false;
     bool timer0_status = false;
     timer1_status = false;
     uint8_t timer1_interrupt_counter = 3;
+    
+    char str[80];
+    
+    UARTprintf("Encoder: , Wanted Pos:");
     while(1)
     {
-        #ifdef UART
-        uart_status = is_character_received();
-        if ((uart_status == true) && (timer1_interrupt_counter != 2))
-        {
-            timer1_interrupt_counter = 1;
-        }
-        uart_clear();
-        #endif
-        #ifndef UART
-        timer1_interrupt_counter = 0;
-        #endif
-
         timer0_status = is_timer0_done();
         if (timer0_status == true)
         {
@@ -224,8 +203,34 @@ main(void)
             #ifdef MOTOR2_ENABLE
             motor_velocity_write(PWM0_BASE, PWM_GEN_2, duty_2, PWM_P);
             #endif
+            #ifndef NDEBUG
+            sprintf(str, "%6.2f", encoder1_pos);
+            UARTprintf("Encoder 1: %s, ", str);
+            sprintf(str, "%6.2f", encoder2_pos);
+            UARTprintf("Encoder 2: %s, ", str);
+            sprintf(str, "%+9.2f", duty_1);
+            UARTprintf("Error 1: %s, ", str);
+            sprintf(str, "%+9.2f", duty_2);
+            UARTprintf("Error 2: %s\n", str);
+            #endif
         }
         reset_timer0();
+        
+        sprintf(str, "%6.2f", encoder2_pos);
+        UARTprintf("%s, ", str);
+        sprintf(str, "%6.2f", motor2_desired_position);
+        UARTprintf("%s\n", str);
+        #ifdef UART
+        uart_status = is_character_received();
+        if ((uart_status == true) && (timer1_interrupt_counter != 2))
+        {
+            timer1_interrupt_counter = 1;
+        }
+        uart_clear();
+        #endif
+        #ifndef UART
+        timer1_interrupt_counter = 0;
+        #endif
 
         timer1_status = is_timer1_done();
         if (timer1_status == true)
@@ -252,43 +257,8 @@ main(void)
                 timer1_interrupt_counter + 1 : timer1_interrupt_counter;
         }
         reset_timer1();
-
-        #ifndef NDEBUG
-        tmpSign = (encoder1_pos < 0) ? "-" : "";
-        tmpVal = (encoder1_pos < 0) ? -encoder1_pos : encoder1_pos;
-
-        tmpInt1 = tmpVal;
-        tmpFrac = tmpVal - tmpInt1;
-        tmpInt2 = trunc(tmpFrac * 10000);
-        UARTprintf("Encoder 1: %s%d.%04d, ", tmpSign, tmpInt1, tmpInt2);
-
-
-        tmpSign = (encoder2_pos < 0) ? "-" : "";
-        tmpVal = (encoder2_pos < 0) ? -encoder2_pos : encoder2_pos;
-
-        tmpInt1 = tmpVal;
-        tmpFrac = tmpVal - tmpInt1;
-        tmpInt2 = trunc(tmpFrac * 10000);
-        UARTprintf("Encoder 2: %s%d.%04d, ", tmpSign, tmpInt1, tmpInt2);
-
-
-        tmpSign = (duty_1 < 0) ? "-" : "";
-        tmpVal = (duty_1 < 0) ? -duty_1 : duty_1;
-
-        tmpInt1 = tmpVal;
-        tmpFrac = tmpVal - tmpInt1;
-        tmpInt2 = trunc(tmpFrac * 10000);
-        UARTprintf("Error 1: %s%d.%04d, ", tmpSign, tmpInt1, tmpInt2);
-
-
-        tmpSign = (duty_2 < 0) ? "-" : "";
-        tmpVal = (duty_2 < 0) ? -duty_2 : duty_2;
-
-        tmpInt1 = tmpVal;
-        tmpFrac = tmpVal - tmpInt1;
-        tmpInt2 = trunc(tmpFrac * 10000);
-        UARTprintf("Error 2: %s%d.%04d\n", tmpSign, tmpInt1, tmpInt2);
-        #endif
+        
+        #ifdef MPU
         timer2_status = is_timer2_done();
         if (timer2_status == true)
         {
@@ -357,36 +327,19 @@ main(void)
             // Printing the values for the roll and pitch angles as degrees,
             // using float type variables.
             //
+            #ifndef NDEBUG_MPU
             roll = phi_gyro + phi_accel;
             pitch = theta_gyro + theta_accel; 
-            #ifndef NDEBUG_MPU
-            tmpSign = (ax < 0) ? "-" : "";
-            tmpVal = (ax < 0) ? -ax : ax;
-
-            tmpInt1 = tmpVal;
-            tmpFrac = tmpVal - tmpInt1;
-            tmpInt2 = trunc(tmpFrac * 10000);
-            UARTprintf("ax: %s%d.%04d, ", tmpSign, tmpInt1, tmpInt2);
-        
-            tmpSign = (roll < 0) ? "-" : "";
-            tmpVal = (roll < 0) ? -roll : roll;
-
-            tmpInt1 = tmpVal;
-            tmpFrac = tmpVal - tmpInt1;
-            tmpInt2 = trunc(tmpFrac * 10000);
-            UARTprintf("Roll: %s%d.%04d, ", tmpSign, tmpInt1, tmpInt2);
-        
-            tmpSign = (pitch < 0) ? "-" : "";
-            tmpVal = (pitch < 0) ? -pitch : pitch;
-
-            tmpInt1 = tmpVal;
-            tmpFrac = tmpVal - tmpInt1;
-            tmpInt2 = trunc(tmpFrac * 10000);
-            UARTprintf("Pitch: %s%d.%04d\n", tmpSign, tmpInt1, tmpInt2);
+            sprintf(str, "%+5.3f", ax);
+            UARTprintf("ax: %s, ", str);
+            sprintf(str, "%+6.1f", roll);
+            UARTprintf("Roll: %s, ", str);
+            sprintf(str, "%+6.1f", pitch);
+            UARTprintf("Pitch: %s\n", str);
             #endif
         }
         reset_timer2();
-        
+        #endif
         
     }
 }
@@ -411,20 +364,26 @@ hardware_setup (void)
     
     mpu6050_init(0x68);
     
-    qei_module0_config(MOTOR1_RATIO, ENCODER1_PULSES, true);
-    qei_module1_config(MOTOR2_RATIO, ENCODER2_PULSES, false);
+    qei_module0_config(MOTOR1_RATIO, ENCODER1_PULSES, false);
+    qei_module1_config(MOTOR2_RATIO, ENCODER2_PULSES, true);
 
     motor1_configure(PWM_P);
     motor2_configure(PWM_P);
-
-    timer0configure(100u);
-    timer1configure(6u);
+    
+    #ifdef MPU
+    timer0configure(125u);
+    #endif
+    #ifndef MPU
+    timer0configure(200u);
+    #endif
+    timer1configure(4u);
     while(!timer1_status)
     {
         timer1_status = is_timer1_done();
     }
+    #ifdef MPU
     timer2configure(15);
-    
+    #endif
     pid_config(0u, KP_POS_0_0, KI_POS_0_0, KD_POS_0_0);
     pid_config(1u, KP_POS_1_0, KI_POS_1_0, KD_POS_1_0);
     

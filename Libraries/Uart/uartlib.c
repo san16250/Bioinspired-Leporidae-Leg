@@ -87,12 +87,12 @@ uart_isr (void)
 	//
 	UARTIntClear(UART0_BASE, ui32Status);
 	
+    character_received = true;
+    
 	while (UARTCharsAvail(UART0_BASE))
 	{
 		UARTgetc();
 	}
-    
-    character_received = true;
 }
  
 /*** end of file ***/

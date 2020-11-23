@@ -23,7 +23,7 @@
 
 
 /*!
- * @brief Configure the PWM module 0 operation for the motor 1.
+ * @brief Configure the PWM module 0 Generator 0 operation for the motor 1.
  *
  * @param[in] num1 The first number to be compared.
  * @param[in] num2 The second number to be compared.
@@ -71,7 +71,7 @@ motor1_configure(uint32_t pwm_period)
 }
 
 /*!
- * @brief Configure the PWM module 0 operation for the motor 2.
+ * @brief Configure the PWM module 0 Generator 2 operation for the motor 2.
  *
  * @param[in] num1 The first number to be compared.
  * @param[in] num2 The second number to be compared.
@@ -171,7 +171,7 @@ uint32_t pwm_period)
     if (duty == 0)
     {
         PWMOutputState(pwm_base, pwm_pin1_bit, false);
-	    PWMOutputState(pwm_base, pwm_pin2, false);
+	    PWMOutputState(pwm_base, pwm_pin2_bit, false);
     } 
 }
 
