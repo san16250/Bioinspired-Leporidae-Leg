@@ -66,8 +66,14 @@ motor1_configure(uint32_t pwm_period)
 	//Enable the pwm generator
 	PWMGenEnable(PWM0_BASE, PWM_GEN_0);
 	
-	PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT, false);
+	PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT, true);
 	PWMOutputState(PWM0_BASE, PWM_OUT_1_BIT, false);
+    
+    GPIOPinTypeGPIOOutput(GPIO_PORTB_BASE, GPIO_PIN_0);
+    GPIOPinTypeGPIOOutput(GPIO_PORTB_BASE, GPIO_PIN_1);
+    
+    GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_0, 0);
+    GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_1, 0);
 }
 
 /*!
@@ -112,9 +118,17 @@ motor2_configure(uint32_t pwm_period)
 	
 	//Enable the pwm generator
 	PWMGenEnable(PWM0_BASE, PWM_GEN_2);
-	
-	PWMOutputState(PWM0_BASE, PWM_OUT_4_BIT, false);
-	PWMOutputState(PWM0_BASE, PWM_OUT_5_BIT, false);
+    
+    PWMOutputState(PWM0_BASE, PWM_OUT_4_BIT, true);
+    PWMOutputState(PWM0_BASE, PWM_OUT_5_BIT, false);
+    
+    
+    GPIOPinTypeGPIOOutput(GPIO_PORTE_BASE, GPIO_PIN_1);
+    GPIOPinTypeGPIOOutput(GPIO_PORTE_BASE, GPIO_PIN_2);
+    
+    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0);
+    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_2, 0);
+    
 }	
 
 /*!
@@ -128,29 +142,11 @@ motor2_configure(uint32_t pwm_period)
  * @return Void.
  */
 void
-motor_velocity_write(uint32_t pwm_base, uint32_t pwm_out, int32_t width,
+motor1_velocity_write(uint32_t pwm_base, uint32_t pwm_out, int32_t width,
 uint32_t pwm_period)
 {
     uint32_t duty;
     int8_t sign;
-    uint32_t pwm_pin1_bit;
-    uint32_t pwm_pin2_bit;
-    uint32_t pwm_pin1;
-    uint32_t pwm_pin2;
-    if (pwm_out == PWM_GEN_0)
-    {
-        pwm_pin1_bit = PWM_OUT_0_BIT;
-        pwm_pin2_bit = PWM_OUT_1_BIT;
-        pwm_pin1 = PWM_OUT_0;
-        pwm_pin2 = PWM_OUT_1;
-    }
-    else
-    {
-        pwm_pin1_bit = PWM_OUT_4_BIT;
-        pwm_pin2_bit = PWM_OUT_5_BIT;
-        pwm_pin1 = PWM_OUT_4;
-        pwm_pin2 = PWM_OUT_5;
-    }
     
     sign = (width < 0) ? -1 : 1;
     width = (width < 0) ? -width : width;
@@ -158,20 +154,59 @@ uint32_t pwm_period)
     duty = (width) * (SysCtlClockGet()/(pwm_period * 100));
     if (sign > 0)
     {
-        PWMOutputState(pwm_base, pwm_pin1_bit, true);
-		PWMOutputState(pwm_base, pwm_pin2_bit, false);
-        PWMPulseWidthSet(pwm_base, pwm_pin1, duty);
+        GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_0, GPIO_PIN_0);
+        GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_1, 0);
     }
     else
     {
-        PWMOutputState(pwm_base, pwm_pin1_bit, false);
-		PWMOutputState(pwm_base, pwm_pin2_bit, true);
-        PWMPulseWidthSet(pwm_base, pwm_pin2, duty);
+        GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_0, 0);
+        GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_1, GPIO_PIN_1);
     }
+    PWMPulseWidthSet(pwm_base, PWM_OUT_0, duty);
     if (duty == 0)
     {
-        PWMOutputState(pwm_base, pwm_pin1_bit, false);
-	    PWMOutputState(pwm_base, pwm_pin2_bit, false);
+        GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_0, 0);
+        GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_1, 0);
+    } 
+}
+
+/*!
+ * @brief Write a duty cycle to the pwm module in motor2
+ *
+ * @param[in] pwm_base Base used for the pwm.
+ * @param[in] pwm_out Module of the base used for the pwm.
+ * @param[in] width Duty cycle in %.
+ * @param[in] pwm_period Period for the clock of the pwm.
+ *
+ * @return Void.
+ */
+void
+motor2_velocity_write(uint32_t pwm_base, uint32_t pwm_out, int32_t width,
+uint32_t pwm_period)
+{
+    uint32_t duty;
+    int8_t sign;
+    
+    sign = (width < 0) ? -1 : 1;
+    width = (width < 0) ? -width : width;
+    width = (width > 100) ? 100 : width;
+    duty = (width) * (SysCtlClockGet()/(pwm_period * 100));
+    if (sign > 0)
+    {
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_PIN_1);
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_2, 0);
+    }
+    else
+    {
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0);
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_2, GPIO_PIN_2);
+    }
+    
+    PWMPulseWidthSet(pwm_base, PWM_OUT_4, duty);
+    if (duty == 0)
+    {
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0);
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_2, 0);
     } 
 }
 

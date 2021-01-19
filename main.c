@@ -36,17 +36,19 @@
 #define MOTOR1_RATIO (75u)
 #define ENCODER1_PULSES (12u)
 #define WANTED_POS_0_0 (360.0f)
-#define WANTED_POS_0_1 (400.0f)
+#define WANTED_POS_0_1 (360.0f)
 
 #define MOTOR2_ENABLE (1u)
-#define MOTOR2_RATIO (100u)
+#define MOTOR2_RATIO (298u)
 #define ENCODER2_PULSES (12u)
 #define WANTED_POS_1_0 (360.0f)
-#define WANTED_POS_1_1 (400.0f)
+#define WANTED_POS_1_1 (420.0f)
 
 #define PWM_P (10000u)
 
+#if 0
 #define NDEBUG (1u)
+#endif
 
 #define UART (1u)
 
@@ -84,10 +86,10 @@ static bool timer1_status = false;
 */
 static float KP_POS_0_0 = 5.5f;
 static float KI_POS_0_0 = 0.02599f;
-static float KD_POS_0_0 = 2.7235f;
+static float KD_POS_0_0 = 0.5f;
 static float KP_POS_0_1 = 5.5f;
 static float KI_POS_0_1 = 0.02599f;
-static float KD_POS_0_1 = 2.7235f;
+static float KD_POS_0_1 = 0.5f;
 
 /*
 *	PID PARAMETERS FOR MOTOR 2
@@ -169,6 +171,7 @@ main(void)
     bool timer2_status = false;
     float encoder1_pos;
     float encoder2_pos;
+    float encoder2_velocity;
     float error_1;
     float error_2;
     float duty_1;
@@ -182,8 +185,7 @@ main(void)
     uint8_t timer1_interrupt_counter = 3;
     
     char str[80];
-    
-    UARTprintf("Encoder: , Wanted Pos:");
+    UARTprintf("Pos, duty, vel\n");
     while(1)
     {
         timer0_status = is_timer0_done();
@@ -195,14 +197,21 @@ main(void)
                                                ENCODER2_PULSES);
             error_1 = motor1_desired_position - encoder1_pos;
             error_2 = motor2_desired_position - encoder2_pos;
+            encoder2_velocity = get_velocity_in_degrees(QEI1_BASE, MOTOR2_RATIO,
+                ENCODER2_PULSES, 8u);
             duty_1 = pid_calc(0, error_1);
-            duty_2 = pid_calc(1, error_2);
+            duty_2 = pid_calc(0, error_2);
+            #if 0
+            duty_2 = -KP_POS_1_0 * encoder2_pos - KD_POS_1_0 *
+                encoder2_velocity;
+            #endif 
             #ifdef MOTOR1_ENABLE
-            motor_velocity_write(PWM0_BASE, PWM_GEN_0, duty_1, PWM_P);
+            motor1_velocity_write(PWM0_BASE, PWM_GEN_0, duty_1, PWM_P);
             #endif
             #ifdef MOTOR2_ENABLE
-            motor_velocity_write(PWM0_BASE, PWM_GEN_2, duty_2, PWM_P);
+            motor2_velocity_write(PWM0_BASE, PWM_GEN_2, duty_2, PWM_P);
             #endif
+            
             #ifndef NDEBUG
             sprintf(str, "%6.2f", encoder1_pos);
             UARTprintf("Encoder 1: %s, ", str);
@@ -216,10 +225,6 @@ main(void)
         }
         reset_timer0();
         
-        sprintf(str, "%6.2f", encoder2_pos);
-        UARTprintf("%s, ", str);
-        sprintf(str, "%6.2f", motor2_desired_position);
-        UARTprintf("%s\n", str);
         #ifdef UART
         uart_status = is_character_received();
         if ((uart_status == true) && (timer1_interrupt_counter != 2))
@@ -362,11 +367,14 @@ hardware_setup (void)
 
     uart_configure();
     
+    #ifdef MPU
     mpu6050_init(0x68);
+    #endif
     
     qei_module0_config(MOTOR1_RATIO, ENCODER1_PULSES, false);
     qei_module1_config(MOTOR2_RATIO, ENCODER2_PULSES, true);
-
+    qei_velocity_configure(QEI1_BASE, 8u);
+    
     motor1_configure(PWM_P);
     motor2_configure(PWM_P);
     
@@ -376,7 +384,7 @@ hardware_setup (void)
     #ifndef MPU
     timer0configure(200u);
     #endif
-    timer1configure(4u);
+    timer1configure(8u);
     while(!timer1_status)
     {
         timer1_status = is_timer1_done();

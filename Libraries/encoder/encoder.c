@@ -173,4 +173,46 @@ get_position_in_degrees(uint32_t qei_base, uint32_t motor_ratio,
 return position;
 }
 
+/*!
+ * @brief Get the velocity of the motor in degrees.
+ *
+ * @param[in] qei_base The module in which we want to read the info.
+ * @param[in] qei_velocity_period specifies the number of clock ticks over
+ *            wich to measure the velocity.
+ *
+ * @return The current position of the motor.
+ */
+void
+qei_velocity_configure(uint32_t qei_base, uint32_t qei_velocity_period)
+{
+    QEIVelocityDisable(qei_base);
+    QEIVelocityConfigure(qei_base, QEI_VELDIV_1,
+        SysCtlClockGet()/qei_velocity_period);
+    QEIVelocityEnable(qei_base);
+}
+
+/*!
+ * @brief Get the velocity of the motor in degrees.
+ *
+ * @param[in] qei_base The module in which we want to read the info.
+ * @param[in] motor_ratio The gear ratio in the motor.
+ * @param[in] encoder_pulses The maximum amount of pulses the encoder can 
+ *            perceive.
+ * @param[in] qei_velocity_period specifies the number of clock ticks over
+ *            wich to measure the velocity.
+ *
+ * @return The current position of the motor.
+ */
+float
+get_velocity_in_degrees(uint32_t qei_base, uint32_t motor_ratio,
+                        uint32_t encoder_pulses, uint32_t qei_velocity_period)
+{
+    uint32_t vel_in_pulses;
+    float velocity;
+    vel_in_pulses = QEIVelocityGet(qei_base);
+    velocity = 60.0f * ((vel_in_pulses * qei_velocity_period)
+        /(encoder_pulses * motor_ratio));
+return velocity;
+}
+
 /*** end of file ***/

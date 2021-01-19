@@ -16,7 +16,9 @@
 
 void motor1_configure(uint32_t pwm_period);
 void motor2_configure(uint32_t pwm_period);
-void motor_velocity_write(uint32_t pwm_base, uint32_t pwm_out, int32_t width,
+void motor1_velocity_write(uint32_t pwm_base, uint32_t pwm_out, int32_t width,
+    uint32_t pwm_period);
+void motor2_velocity_write(uint32_t pwm_base, uint32_t pwm_out, int32_t width,
     uint32_t pwm_period);
 
 
